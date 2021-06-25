@@ -12,7 +12,7 @@ const keyboard = {
 
   properties: {
     value: "",
-    capslock: false,
+    capsLock: false,
   },
 
   init() {
@@ -31,6 +31,15 @@ const keyboard = {
     // Add to DOM
     this.elements.main.appendChild(this.elements.keysContainer);
     document.body.appendChild(this.elements.main);
+
+    // Automatically use keyboard for elements with .use-keyboard-input
+    document.querySelectorAll(".use-keyboard-input").forEach((element) => {
+      element.addEventListener("focus", () => {
+        this.open(element.value, (currentValue) => {
+          element.value = currentValue;
+        });
+      });
+    });
   },
 
   _createKeys() {
@@ -119,7 +128,7 @@ const keyboard = {
           keyElement.innerHTML = createIconHTML("keyboard_capslock");
 
           keyElement.addEventListener("click", () => {
-            this._toggleCapslock();
+            this._toggleCapsLock();
             keyElement.classList.toggle(
               "keyboard_key-active",
               this.properties.capsLock
@@ -184,10 +193,12 @@ const keyboard = {
   },
 
   _triggerEvent(handlerName) {
-    console.log("Event triggered! Event Name: " + handlerName);
+    if (typeof this.eventHandlers[handlerName] == "function") {
+      this.eventHandlers[handlerName](this.properties.value);
+    }
   },
 
-  _toggleCapslock() {
+  _toggleCapsLock() {
     this.properties.capsLock = !this.properties.capsLock;
 
     for (const key of this.elements.keys) {
@@ -206,7 +217,12 @@ const keyboard = {
     this.elements.main.classList.remove("keyboard--hidden");
   },
 
-  close() {},
+  close() {
+    this.properties.value = "";
+    this.eventHandlers.oninput = oninput;
+    this.eventHandlers.onclose = onclose;
+    this.elements.main.classList.add("keyboard--hidden");
+  },
 };
 
 window.addEventListener("DOMContentLoaded", function () {

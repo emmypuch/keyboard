@@ -123,6 +123,51 @@ const keyboard = {
           });
 
           break;
+
+        case "enter":
+          keyElement.classList.add("keyboard_key-wide");
+          keyElement.innerHTML = createIconHTML("keyboard_return");
+
+          keyElement.addEventListener("click", () => {
+            this.properties.value += "\n";
+            this._triggerEvent("oninput");
+          });
+
+          break;
+
+        case "space":
+          keyElement.classList.add("keyboard_key-extra-wide");
+          keyElement.innerHTML = createIconHTML("space_bar");
+
+          keyElement.addEventListener("click", () => {
+            this.properties.value += " ";
+            this._triggerEvent("oninput");
+          });
+
+          break;
+
+        case "done":
+          keyElement.classList.add("keyboard_key-wide", "keyboard_key-dark");
+          keyElement.innerHTML = createIconHTML("check_circle");
+
+          keyElement.addEventListener("click", () => {
+            this.close();
+            this._triggerEvent("onclose");
+          });
+
+          break;
+
+        default:
+          keyElement.textContent = key.toLowerCase();
+
+          keyElement.addEventListener("click", () => {
+            this.properties.value += this.properties.capsLock
+              ? key.toUpperCase()
+              : key.toLowerCase();
+            this._triggerEvent("oninput");
+          });
+
+          break;
       }
     });
   },
